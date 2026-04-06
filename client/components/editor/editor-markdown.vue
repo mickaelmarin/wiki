@@ -210,6 +210,7 @@ import mdMark from 'markdown-it-mark'
 import mdMultiTable from 'markdown-it-multimd-table'
 import mdFootnote from 'markdown-it-footnote'
 import mdImsize from 'markdown-it-imsize'
+import mdContainer from 'markdown-it-container'
 import katex from 'katex'
 import underline from '../../libs/markdown-it-underline'
 import 'katex/dist/contrib/mhchem'
@@ -276,6 +277,40 @@ const md = new MarkdownIt({
   .use(mdMark)
   .use(mdFootnote)
   .use(mdImsize)
+
+// Containers (mirror server/modules/rendering/markdown-container/renderer.js
+// so the preview matches the saved page rendering)
+const containerTypes = ['shellout', 'info', 'warning', 'success', 'danger', 'tip']
+for (const name of containerTypes) {
+  md.use(mdContainer, name, {
+    render (tokens, idx) {
+      const token = tokens[idx]
+      if (token.nesting === 1) {
+        for (let i = idx + 1; i < tokens.length; i++) {
+          const t = tokens[i]
+          if (t.type === `container_${name}_close` && t.level === token.level) { break }
+          if ((t.type === 'paragraph_open' || t.type === 'paragraph_close') && t.level === token.level + 1) {
+            t.hidden = true
+          }
+          if (t.type === 'inline' && t.children) {
+            for (const child of t.children) {
+              if (child.type === 'softbreak' || child.type === 'hardbreak') {
+                child.type = 'text'
+                child.content = '\n'
+                child.tag = ''
+              }
+            }
+          }
+        }
+        const title = token.info.trim().slice(name.length).trim()
+        return `<div class="md-container md-container-${name}">` +
+          (title ? `<div class="md-container-title">${md.utils.escapeHtml(title)}</div>\n` : '') +
+          '<pre>'
+      }
+      return '</pre></div>\n'
+    }
+  })
+}
 
 // DOMPurify fix for draw.io
 DOMPurify.addHook('uponSanitizeElement', (elm) => {
