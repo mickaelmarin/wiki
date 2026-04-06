@@ -1,0 +1,38 @@
+key: markdownContainer
+title: Containers
+description: Render custom block containers (info, warning, success, danger, tip)
+author: requarks.io
+icon: mdi-card-text-outline
+enabledDefault: true
+dependsOn: markdownCore
+props:
+  info:
+    type: Boolean
+    default: true
+    title: Info
+    hint: 'Enable ::: info containers.'
+    order: 1
+  warning:
+    type: Boolean
+    default: true
+    title: Warning
+    hint: 'Enable ::: warning containers.'
+    order: 2
+  success:
+    type: Boolean
+    default: true
+    title: Success
+    hint: 'Enable ::: success containers.'
+    order: 3
+  danger:
+    type: Boolean
+    default: true
+    title: Danger
+    hint: 'Enable ::: danger containers.'
+    order: 4
+  tip:
+    type: Boolean
+    default: true
+    title: Tip
+    hint: 'Enable ::: tip containers.'
+    order: 5

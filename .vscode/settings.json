@@ -12,5 +12,7 @@
   },
   "i18n-ally.localesPaths": [
     "server/locales"
-  ]
+  ],
+  "remote.SSH.httpsProxy": "",
+  "remote.autoForwardPortsFallback": 0
 }
