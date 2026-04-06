@@ -46,6 +46,40 @@
         v-menu(offset-y, open-on-hover)
           template(v-slot:activator='{ on }')
             v-btn.animated.fadeIn.wait-p6s(icon, tile, v-on='on').mx-0
+              v-icon mdi-card-text-outline
+          v-list.py-0
+            v-list-item(@click='insertContainer(`info`)')
+              v-list-item-action
+                v-icon(color='blue') mdi-information-outline
+              v-list-item-title Info
+            v-divider
+            v-list-item(@click='insertContainer(`warning`)')
+              v-list-item-action
+                v-icon(color='warning') mdi-alert-outline
+              v-list-item-title Warning
+            v-divider
+            v-list-item(@click='insertContainer(`success`)')
+              v-list-item-action
+                v-icon(color='success') mdi-check-circle-outline
+              v-list-item-title Success
+            v-divider
+            v-list-item(@click='insertContainer(`danger`)')
+              v-list-item-action
+                v-icon(color='error') mdi-alert-circle-outline
+              v-list-item-title Danger
+            v-divider
+            v-list-item(@click='insertContainer(`tip`)')
+              v-list-item-action
+                v-icon(color='amber') mdi-lightbulb-outline
+              v-list-item-title Tip
+            v-divider
+            v-list-item(@click='insertContainer(`shellout`)')
+              v-list-item-action
+                v-icon mdi-console
+              v-list-item-title Shell output
+        v-menu(offset-y, open-on-hover)
+          template(v-slot:activator='{ on }')
+            v-btn.animated.fadeIn.wait-p7s(icon, tile, v-on='on').mx-0
               v-icon mdi-alpha-t-box-outline
           v-list.py-0
             v-list-item(@click='insertBeforeEachLine({ content: `> `})')
@@ -75,27 +109,27 @@
             v-divider
         v-tooltip(bottom, color='primary')
           template(v-slot:activator='{ on }')
-            v-btn.animated.fadeIn.wait-p7s(icon, tile, v-on='on', @click='insertBeforeEachLine({ content: `- `})').mx-0
+            v-btn.animated.fadeIn.wait-p8s(icon, tile, v-on='on', @click='insertBeforeEachLine({ content: `- `})').mx-0
               v-icon mdi-format-list-bulleted
           span {{$t('editor:markup.unorderedList')}}
         v-tooltip(bottom, color='primary')
           template(v-slot:activator='{ on }')
-            v-btn.animated.fadeIn.wait-p8s(icon, tile, v-on='on', @click='insertBeforeEachLine({ content: `1. `})').mx-0
+            v-btn.animated.fadeIn.wait-p9s(icon, tile, v-on='on', @click='insertBeforeEachLine({ content: `1. `})').mx-0
               v-icon mdi-format-list-numbered
           span {{$t('editor:markup.orderedList')}}
         v-tooltip(bottom, color='primary')
           template(v-slot:activator='{ on }')
-            v-btn.animated.fadeIn.wait-p9s(icon, tile, v-on='on', @click='toggleMarkup({ start: "`" })').mx-0
+            v-btn.animated.fadeIn.wait-p10s(icon, tile, v-on='on', @click='toggleMarkup({ start: "`" })').mx-0
               v-icon mdi-code-tags
           span {{$t('editor:markup.inlineCode')}}
         v-tooltip(bottom, color='primary')
           template(v-slot:activator='{ on }')
-            v-btn.animated.fadeIn.wait-p10s(icon, tile, v-on='on', @click='toggleMarkup({ start: `<kbd>`, end: `</kbd>` })').mx-0
+            v-btn.animated.fadeIn.wait-p11s(icon, tile, v-on='on', @click='toggleMarkup({ start: `<kbd>`, end: `</kbd>` })').mx-0
               v-icon mdi-keyboard-variant
           span {{$t('editor:markup.keyboardKey')}}
         v-tooltip(bottom, color='primary')
           template(v-slot:activator='{ on }')
-            v-btn.animated.fadeIn.wait-p11s(icon, tile, v-on='on', @click='insertAfter({ content: `---`, newLine: true })').mx-0
+            v-btn.animated.fadeIn.wait-p12s(icon, tile, v-on='on', @click='insertAfter({ content: `---`, newLine: true })').mx-0
               v-icon mdi-minus
           span {{$t('editor:markup.horizontalBar')}}
         template(v-if='$vuetify.breakpoint.mdAndUp')
@@ -456,6 +490,23 @@ export default {
     }
   },
   methods: {
+    insertContainer (name) {
+      const selection = this.cm.doc.getSelection()
+      const snippet = `:::${name}\n${selection || 'Content here'}\n:::`
+      if (selection) {
+        this.cm.doc.replaceSelection(snippet)
+      } else {
+        const cursor = this.cm.doc.getCursor('head')
+        this.cm.doc.replaceRange(snippet, cursor)
+        // Place cursor on the content line for immediate editing
+        this.cm.doc.setCursor({ line: cursor.line + 1, ch: 0 })
+        this.cm.doc.setSelection(
+          { line: cursor.line + 1, ch: 0 },
+          { line: cursor.line + 1, ch: 'Content here'.length }
+        )
+      }
+      this.cm.focus()
+    },
     toggleModal(key) {
       this.activeModal = (this.activeModal === key) ? '' : key
       this.helpShown = false
