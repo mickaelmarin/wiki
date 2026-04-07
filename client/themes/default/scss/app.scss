@@ -200,12 +200,8 @@
   // ---------------------------------
 
   p {
-    padding: 1rem 0 0 0;
+    padding: 0;
     margin: 0;
-
-    @at-root .contents > div > p:first-child {
-      padding-top: 0;
-    }
 
     @at-root .v-application & {
       margin-bottom: 0;
@@ -352,6 +348,144 @@
         background-color: mc('green', '900');
         color: mc('green', '50');
         border-color: mc('green', '500');
+      }
+    }
+    &.is-important {
+      background-color: mc('purple', '50');
+      border-color: mc('purple', '300');
+      color: mc('purple', '900');
+
+      &::before {
+        content: "\F02D7";
+      }
+
+      code:not([class^="language-"]) {
+        background-color: mc('purple', '50');
+        color: mc('purple', '800');
+      }
+
+      @at-root .theme--dark & {
+        background-color: mc('purple', '900');
+        color: mc('purple', '50');
+        border-color: mc('purple', '500');
+      }
+    }
+
+    // ---------------------------------
+    // GitHub / GitLab alert style
+    // Overrides the thick-border blockquote when [!note] syntax is used
+    // ---------------------------------
+    &.github-alert {
+      border-left-width: 4px;
+      border-left-style: solid;
+      border-left-color: mc('blue-grey', '400');
+      border-radius: 0 .25rem .25rem 0;
+      background-color: transparent;
+      color: inherit;
+      padding: .4rem 1rem;
+
+      > p {
+        margin: 0;
+      }
+
+      @at-root .theme--dark & {
+        background-color: transparent;
+        color: inherit;
+        border-color: mc('blue-grey', '600');
+      }
+
+      &::before {
+        display: none;
+      }
+
+      &.is-info {
+        border-color: mc('blue', '500');
+        background-color: transparent;
+        color: inherit;
+        @at-root .theme--dark & { background-color: transparent; color: inherit; border-color: mc('blue', '400'); }
+        .alert-title { color: mc('blue', '600'); }
+      }
+      &.is-success {
+        border-color: mc('green', '600');
+        background-color: transparent;
+        color: inherit;
+        @at-root .theme--dark & { background-color: transparent; color: inherit; border-color: mc('green', '500'); }
+        .alert-title { color: mc('green', '700'); }
+      }
+      &.is-important {
+        border-color: mc('purple', '500');
+        background-color: transparent;
+        color: inherit;
+        @at-root .theme--dark & { background-color: transparent; color: inherit; border-color: mc('purple', '400'); }
+        .alert-title { color: mc('purple', '600'); }
+      }
+      &.is-danger {
+        border-color: mc('red', '500');
+        background-color: transparent;
+        color: inherit;
+        @at-root .theme--dark & { background-color: transparent; color: inherit; border-color: mc('red', '400'); }
+        .alert-title { color: mc('red', '600'); }
+      }
+      &.is-warning {
+        border-color: mc('orange', '700');
+        background-color: transparent;
+        color: inherit;
+        @at-root .theme--dark & { background-color: transparent; color: inherit; border-color: mc('orange', '500'); }
+        .alert-title { color: darken(mc('orange', '800'), 5%); }
+      }
+
+      &.is-info .alert-title::before      { content: "\F02FC"; } // mdi-information
+      &.is-success .alert-title::before   { content: "\F0336"; } // mdi-lightbulb-outline
+      &.is-important .alert-title::before { content: "\F1238"; } // mdi-exclamation-thick
+      &.is-danger .alert-title::before    { content: "\F05D6"; } // mdi-alert-circle-outline
+      &.is-warning .alert-title::before   { content: "\F0026"; } // mdi-alert
+
+      .alert-title {
+        font-weight: 700;
+        margin-bottom: .2rem;
+        display: flex;
+        align-items: center;
+        gap: .4rem;
+
+        &::before {
+          display: inline-block;
+          font: normal normal normal 18px/1 "Material Design Icons", sans-serif;
+          flex-shrink: 0;
+        }
+      }
+    }
+  }
+
+  // ---------------------------------
+  // MARKDOWN CONTAINERS
+  // ---------------------------------
+
+  .md-container-shellout {
+    border-left: none;
+    background: #000;
+    padding: 1em;
+    font-style: normal;
+    border-radius: .3em;
+
+    pre {
+      overflow-x: auto;
+      white-space: pre;
+      word-break: normal;
+      overflow-wrap: normal;
+
+      &::-webkit-scrollbar {
+        height: 4px;
+      }
+      &::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      &::-webkit-scrollbar-thumb {
+        background: transparent;
+        border-radius: 2px;
+        transition: background .2s;
+      }
+      &:hover::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, .3);
       }
     }
   }

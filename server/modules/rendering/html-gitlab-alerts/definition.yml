@@ -1,0 +1,8 @@
+key: htmlGitlabAlerts
+title: GitLab Flavored Markdown Alerts
+description: Parse GitLab/GitHub-style alert blockquotes ([!note], [!tip], [!important], [!caution], [!warning])
+author: requarks.io
+icon: mdi-alert-box-outline
+enabledDefault: true
+dependsOn: htmlCore
+props: {}

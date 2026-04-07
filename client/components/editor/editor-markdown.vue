@@ -52,36 +52,37 @@
               v-list-item-action
                 v-icon mdi-console
               v-list-item-title Shell Output
-            v-divider
-            v-list-item(@click='insertContainer(`info`)')
-              v-list-item-action
-                v-icon(color='blue') mdi-information-outline
-              v-list-item-title Info
-            v-divider
-            v-list-item(@click='insertContainer(`warning`)')
-              v-list-item-action
-                v-icon(color='warning') mdi-alert-outline
-              v-list-item-title Warning
-            v-divider
-            v-list-item(@click='insertContainer(`success`)')
-              v-list-item-action
-                v-icon(color='success') mdi-check-circle-outline
-              v-list-item-title Success
-            v-divider
-            v-list-item(@click='insertContainer(`danger`)')
-              v-list-item-action
-                v-icon(color='error') mdi-alert-circle-outline
-              v-list-item-title Danger
-            v-divider
-            v-list-item(@click='insertContainer(`tip`)')
-              v-list-item-action
-                v-icon(color='amber') mdi-lightbulb-outline
-              v-list-item-title Tip
         v-menu(offset-y, open-on-hover)
           template(v-slot:activator='{ on }')
             v-btn.animated.fadeIn.wait-p7s(icon, tile, v-on='on').mx-0
               v-icon mdi-alpha-t-box-outline
           v-list.py-0
+            v-list-item(@click='insertGitlabAlert(`note`)')
+              v-list-item-action
+                v-icon(color='blue') mdi-information-outline
+              v-list-item-title Note
+            v-divider
+            v-list-item(@click='insertGitlabAlert(`tip`)')
+              v-list-item-action
+                v-icon(color='success') mdi-lightbulb-outline
+              v-list-item-title Tip
+            v-divider
+            v-list-item(@click='insertGitlabAlert(`important`)')
+              v-list-item-action
+                v-icon(color='purple') mdi-alert-decagram-outline
+              v-list-item-title Important
+            v-divider
+            v-list-item(@click='insertGitlabAlert(`caution`)')
+              v-list-item-action
+                v-icon(color='error') mdi-alert-circle-outline
+              v-list-item-title Caution
+            v-divider
+            v-list-item(@click='insertGitlabAlert(`warning`)')
+              v-list-item-action
+                v-icon(color='warning') mdi-alert-outline
+              v-list-item-title Warning
+            v-divider
+            v-subheader Classic Blockquotes
             v-list-item(@click='insertBeforeEachLine({ content: `> `})')
               v-list-item-action
                 v-icon mdi-alpha-t-box-outline
@@ -399,6 +400,69 @@ const md = new MarkdownIt({
   .use(mdFootnote)
   .use(mdImsize)
 
+// GitLab Alerts (mirror server/modules/rendering/html-gitlab-alerts/renderer.js
+// so the preview matches the saved page rendering)
+const gitlabAlertPattern = /^\[!(note|tip|important|caution|warning)\]$/i
+const gitlabAlertCssMap = { note: 'is-info', tip: 'is-success', important: 'is-important', caution: 'is-danger', warning: 'is-warning' }
+const gitlabAlertTitleMap = { note: 'Note', tip: 'Tip', important: 'Important', caution: 'Caution', warning: 'Warning' }
+
+md.core.ruler.push('gitlab_alerts', (state) => {
+  const tokens = state.tokens
+  for (let i = 0; i < tokens.length; i++) {
+    if (tokens[i].type !== 'blockquote_open') continue
+
+    // Find first inline token inside this blockquote
+    let inlineIdx = -1
+    for (let j = i + 1; j < tokens.length; j++) {
+      if (tokens[j].type === 'blockquote_close') break
+      if (tokens[j].type === 'inline') { inlineIdx = j; break }
+    }
+    if (inlineIdx < 0) continue
+
+    // The marker must be the very first text child (before any softbreak)
+    const children = tokens[inlineIdx].children || []
+    if (!children.length || children[0].type !== 'text') continue
+
+    const match = children[0].content.trim().match(gitlabAlertPattern)
+    if (!match) continue
+
+    const type = match[1].toLowerCase()
+    tokens[i].attrSet('class', `${gitlabAlertCssMap[type]} github-alert`)
+
+    // Check if content follows on the same paragraph (separated by softbreak)
+    const hasSoftbreak = children.length > 1 &&
+      (children[1].type === 'softbreak' || children[1].type === 'hardbreak')
+    const remainingChildren = hasSoftbreak ? children.slice(2) : children.slice(1)
+
+    if (remainingChildren.length > 0) {
+      // Content is in the same paragraph — split into title + content paragraphs
+      tokens[inlineIdx].children = remainingChildren
+      tokens[inlineIdx].content = tokens[inlineIdx].content.replace(/^\[!(?:note|tip|important|caution|warning)\]\n?/i, '')
+
+      const titlePOpen = new state.Token('paragraph_open', 'p', 1)
+      titlePOpen.attrSet('class', 'alert-title')
+      const titleInline = new state.Token('inline', '', 0)
+      const titleText = new state.Token('text', '', 0)
+      titleText.content = gitlabAlertTitleMap[type]
+      titleInline.children = [titleText]
+      titleInline.content = gitlabAlertTitleMap[type]
+      const titlePClose = new state.Token('paragraph_close', 'p', -1)
+
+      // Insert title paragraph before the current paragraph_open
+      tokens.splice(inlineIdx - 1, 0, titlePOpen, titleInline, titlePClose)
+    } else {
+      // Marker is alone in its paragraph — reuse it as the title
+      if (inlineIdx > 0 && tokens[inlineIdx - 1].type === 'paragraph_open') {
+        tokens[inlineIdx - 1].attrSet('class', 'alert-title')
+      }
+      const titleText = new state.Token('text', '', 0)
+      titleText.content = gitlabAlertTitleMap[type]
+      tokens[inlineIdx].children = [titleText]
+      tokens[inlineIdx].content = gitlabAlertTitleMap[type]
+    }
+  }
+})
+
 // Containers (mirror server/modules/rendering/markdown-container/renderer.js
 // so the preview matches the saved page rendering)
 const containerTypes = ['shellout', 'info', 'warning', 'success', 'danger', 'tip']
@@ -612,6 +676,22 @@ export default {
         this.cm.doc.setSelection(
           { line: cursor.line + 1, ch: '<pre>'.length },
           { line: cursor.line + 1, ch: '<pre>'.length + content.length }
+        )
+      }
+      this.cm.focus()
+    },
+    insertGitlabAlert (type) {
+      const selection = this.cm.doc.getSelection()
+      const content = selection || 'Your content here'
+      const snippet = `> [!${type}]\n> ${content}`
+      if (selection) {
+        this.cm.doc.replaceSelection(snippet)
+      } else {
+        const cursor = this.cm.doc.getCursor('head')
+        this.cm.doc.replaceRange(snippet, cursor)
+        this.cm.doc.setSelection(
+          { line: cursor.line + 1, ch: 2 },
+          { line: cursor.line + 1, ch: 2 + content.length }
         )
       }
       this.cm.focus()
