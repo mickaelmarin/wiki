@@ -602,17 +602,16 @@ export default {
     },
     insertContainer (name) {
       const selection = this.cm.doc.getSelection()
-      const snippet = `:::${name}\n${selection || 'Content here'}\n:::`
+      const content = selection || 'Your content here'
+      const snippet = `<div class="md-container md-container-${name}">\n<pre>${content}</pre>\n</div>`
       if (selection) {
         this.cm.doc.replaceSelection(snippet)
       } else {
         const cursor = this.cm.doc.getCursor('head')
         this.cm.doc.replaceRange(snippet, cursor)
-        // Place cursor on the content line for immediate editing
-        this.cm.doc.setCursor({ line: cursor.line + 1, ch: 0 })
         this.cm.doc.setSelection(
-          { line: cursor.line + 1, ch: 0 },
-          { line: cursor.line + 1, ch: 'Content here'.length }
+          { line: cursor.line + 1, ch: '<pre>'.length },
+          { line: cursor.line + 1, ch: '<pre>'.length + content.length }
         )
       }
       this.cm.focus()
