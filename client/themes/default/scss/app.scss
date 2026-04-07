@@ -874,7 +874,6 @@
     background-color: mc('grey', '900');
     padding: 1rem 1rem 1rem 3rem;
     margin: 1rem 0;
-
     @at-root .theme--dark & {
       background-color: darken(mc('grey', '900'), 5%);
     }
@@ -887,6 +886,22 @@
       display: block;
       font-size: .85rem;
       font-family: 'Roboto Mono', monospace;
+      overflow-x: auto;
+
+      &::-webkit-scrollbar {
+        height: 4px;
+      }
+      &::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      &::-webkit-scrollbar-thumb {
+        background: transparent;
+        border-radius: 2px;
+        transition: background .2s;
+      }
+      &:hover::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, .3);
+      }
 
       &:after, &:before {
         content: initial;
