@@ -187,11 +187,23 @@
                 v-icon mdi-file-code-outline
               v-list-item-title YAML
             v-divider
-        v-tooltip(bottom, color='primary')
+        v-menu(offset-y, open-on-hover, :close-on-content-click='false')
           template(v-slot:activator='{ on }')
-            v-btn.animated.fadeIn.wait-p10s(icon, tile, v-on='on', @click='insertTable()').mx-0
+            v-btn.animated.fadeIn.wait-p10s(icon, tile, v-on='on').mx-0
               v-icon mdi-table
-          span Table
+          v-card.pa-2
+            .caption.text-center.mb-1.grey--text {{ tablePickerHover.cols > 0 ? `${tablePickerHover.cols} × ${tablePickerHover.rows}` : 'Table' }}
+            table(style='border-collapse: separate; border-spacing: 3px;')
+              tr(v-for='r in 6', :key='r')
+                td(
+                  v-for='c in 6',
+                  :key='c',
+                  style='width:18px; height:18px; cursor:pointer; border:1px solid;',
+                  :style='{ background: c <= tablePickerHover.cols && r <= tablePickerHover.rows ? "#1976d2" : "#e0e0e0", borderColor: c <= tablePickerHover.cols && r <= tablePickerHover.rows ? "#1565c0" : "#bdbdbd" }',
+                  @mouseover='tablePickerHover = { cols: c, rows: r }',
+                  @mouseleave='tablePickerHover = { cols: 0, rows: 0 }',
+                  @click='insertTable(tablePickerHover.cols, tablePickerHover.rows)'
+                )
         v-tooltip(bottom, color='primary')
           template(v-slot:activator='{ on }')
             v-btn.animated.fadeIn.wait-p11s(icon, tile, v-on='on', @click='toggleMarkup({ start: `<kbd>`, end: `</kbd>` })').mx-0
@@ -202,6 +214,11 @@
             v-btn.animated.fadeIn.wait-p12s(icon, tile, v-on='on', @click='insertAfter({ content: `---`, newLine: true })').mx-0
               v-icon mdi-minus
           span {{$t('editor:markup.horizontalBar')}}
+        v-tooltip(bottom, color='primary')
+          template(v-slot:activator='{ on }')
+            v-btn.animated.fadeIn.wait-p13s(icon, tile, v-on='on', @click='insertAfter({ content: `<br/>`, newLine: false })').mx-0
+              v-icon mdi-format-pilcrow
+          span Line Break &lt;br/&gt;
         template(v-if='$vuetify.breakpoint.mdAndUp')
           v-spacer
           v-tooltip(bottom, color='primary', v-if='previewShown')
@@ -526,7 +543,8 @@ export default {
       previewHTML: '',
       helpShown: false,
       spellModeActive: false,
-      insertLinkDialog: false
+      insertLinkDialog: false,
+      tablePickerHover: { cols: 0, rows: 0 }
     }
   },
   computed: {
@@ -560,8 +578,11 @@ export default {
     }
   },
   methods: {
-    insertTable () {
-      const snippet = `| Header 1 | Header 2 | Header 3 |\n| -------- | -------- | -------- |\n| Cell 1   | Cell 2   | Cell 3   |\n| Cell 4   | Cell 5   | Cell 6   |`
+    insertTable (cols = 3, rows = 2) {
+      const header = '| ' + Array.from({ length: cols }, (_, i) => `Header ${i + 1}`).join(' | ') + ' |'
+      const separator = '| ' + Array.from({ length: cols }, () => '--------').join(' | ') + ' |'
+      const row = '| ' + Array.from({ length: cols }, () => 'Cell').join(' | ') + ' |'
+      const snippet = [header, separator, ...Array.from({ length: rows }, () => row)].join('\n')
       const cursor = this.cm.doc.getCursor('head')
       this.cm.doc.replaceRange(snippet, cursor)
       this.cm.doc.setCursor({ line: cursor.line, ch: 2 })
