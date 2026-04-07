@@ -48,6 +48,11 @@
             v-btn.animated.fadeIn.wait-p6s(icon, tile, v-on='on').mx-0
               v-icon mdi-card-text-outline
           v-list.py-0
+            v-list-item(@click='insertContainer(`shellout`)')
+              v-list-item-action
+                v-icon mdi-console
+              v-list-item-title Shell Output
+            v-divider
             v-list-item(@click='insertContainer(`info`)')
               v-list-item-action
                 v-icon(color='blue') mdi-information-outline
@@ -72,11 +77,6 @@
               v-list-item-action
                 v-icon(color='amber') mdi-lightbulb-outline
               v-list-item-title Tip
-            v-divider
-            v-list-item(@click='insertContainer(`shellout`)')
-              v-list-item-action
-                v-icon mdi-console
-              v-list-item-title Shell output
         v-menu(offset-y, open-on-hover)
           template(v-slot:activator='{ on }')
             v-btn.animated.fadeIn.wait-p7s(icon, tile, v-on='on').mx-0
@@ -117,11 +117,81 @@
             v-btn.animated.fadeIn.wait-p9s(icon, tile, v-on='on', @click='insertBeforeEachLine({ content: `1. `})').mx-0
               v-icon mdi-format-list-numbered
           span {{$t('editor:markup.orderedList')}}
+        v-menu(offset-y, open-on-hover)
+          template(v-slot:activator='{ on }')
+            v-btn.animated.fadeIn.wait-p10s(icon, tile, v-on='on').mx-0
+              v-icon mdi-code-tags
+          v-list.py-0
+            v-list-item(@click='toggleMarkup({ start: "`" })')
+              v-list-item-action
+                v-icon mdi-code-tags
+              v-list-item-title {{$t('editor:markup.inlineCode')}}
+            v-divider
+            v-list-item(@click='insertCodeBlock(`bash`)')
+              v-list-item-action
+                v-icon mdi-console
+              v-list-item-title Bash
+            v-divider
+            v-list-item(@click='insertCodeBlock(`bat`)')
+              v-list-item-action
+                v-icon mdi-microsoft-windows
+              v-list-item-title Batch
+            v-divider
+            v-list-item(@click='insertCodeBlock(`c`)')
+              v-list-item-action
+                v-icon mdi-alpha-c-circle-outline
+              v-list-item-title C
+            v-divider
+            v-list-item(@click='insertCodeBlock(`css`)')
+              v-list-item-action
+                v-icon mdi-language-css3
+              v-list-item-title CSS
+            v-divider
+            v-list-item(@click='insertCodeBlock(`go`)')
+              v-list-item-action
+                v-icon mdi-language-go
+              v-list-item-title Go
+            v-divider
+            v-list-item(@click='insertCodeBlock(`html`)')
+              v-list-item-action
+                v-icon mdi-language-html5
+              v-list-item-title HTML
+            v-divider
+            v-list-item(@click='insertCodeBlock(`js`)')
+              v-list-item-action
+                v-icon mdi-language-javascript
+              v-list-item-title JavaScript
+            v-divider
+            v-list-item(@click='insertCodeBlock(`python`)')
+              v-list-item-action
+                v-icon mdi-language-python
+              v-list-item-title Python
+            v-divider
+            v-list-item(@click='insertCodeBlock(`rb`)')
+              v-list-item-action
+                v-icon mdi-language-ruby
+              v-list-item-title Ruby
+            v-divider
+            v-list-item(@click='insertCodeBlock(`sql`)')
+              v-list-item-action
+                v-icon mdi-database
+              v-list-item-title SQL
+            v-divider
+            v-list-item(@click='insertCodeBlock(`xml`)')
+              v-list-item-action
+                v-icon mdi-xml
+              v-list-item-title XML
+            v-divider
+            v-list-item(@click='insertCodeBlock(`yaml`)')
+              v-list-item-action
+                v-icon mdi-file-code-outline
+              v-list-item-title YAML
+            v-divider
         v-tooltip(bottom, color='primary')
           template(v-slot:activator='{ on }')
-            v-btn.animated.fadeIn.wait-p10s(icon, tile, v-on='on', @click='toggleMarkup({ start: "`" })').mx-0
-              v-icon mdi-code-tags
-          span {{$t('editor:markup.inlineCode')}}
+            v-btn.animated.fadeIn.wait-p10s(icon, tile, v-on='on', @click='insertTable()').mx-0
+              v-icon mdi-table
+          span Table
         v-tooltip(bottom, color='primary')
           template(v-slot:activator='{ on }')
             v-btn.animated.fadeIn.wait-p11s(icon, tile, v-on='on', @click='toggleMarkup({ start: `<kbd>`, end: `</kbd>` })').mx-0
@@ -490,6 +560,25 @@ export default {
     }
   },
   methods: {
+    insertTable () {
+      const snippet = `| Header 1 | Header 2 | Header 3 |\n| -------- | -------- | -------- |\n| Cell 1   | Cell 2   | Cell 3   |\n| Cell 4   | Cell 5   | Cell 6   |`
+      const cursor = this.cm.doc.getCursor('head')
+      this.cm.doc.replaceRange(snippet, cursor)
+      this.cm.doc.setCursor({ line: cursor.line, ch: 2 })
+      this.cm.focus()
+    },
+    insertCodeBlock (lang) {
+      const selection = this.cm.doc.getSelection()
+      const snippet = `\`\`\`${lang}\n${selection || ''}\n\`\`\``
+      if (selection) {
+        this.cm.doc.replaceSelection(snippet)
+      } else {
+        const cursor = this.cm.doc.getCursor('head')
+        this.cm.doc.replaceRange(snippet, cursor)
+        this.cm.doc.setCursor({ line: cursor.line + 1, ch: 0 })
+      }
+      this.cm.focus()
+    },
     insertContainer (name) {
       const selection = this.cm.doc.getSelection()
       const snippet = `:::${name}\n${selection || 'Content here'}\n:::`
