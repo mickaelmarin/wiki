@@ -86,7 +86,7 @@
                 v-icon(color='warning') mdi-alert-outline
               v-list-item-title Warning
             v-divider
-            v-list-item(@click='insertBeforeEachLine({ content: `> `})')
+            v-list-item(@click='insertBlockquote()')
               v-list-item-action
                 v-icon mdi-alpha-t-box-outline
               v-list-item-title {{$t('editor:markup.blockquote')}}
@@ -774,7 +774,10 @@ export default {
     /**
      * Insert content before current line
      */
-    insertBeforeEachLine({ content, after }) {
+    insertBlockquote () {
+      this.insertBeforeEachLine({ content: '> ', appendToAllButLast: '\\' })
+    },
+    insertBeforeEachLine({ content, after, appendToAllButLast }) {
       let lines = []
       if (!this.cm.doc.somethingSelected()) {
         lines.push(this.cm.doc.getCursor('head').line)
@@ -785,14 +788,18 @@ export default {
           return _.times(range, l => l + lowestLine)
         }))
       }
-      lines.forEach(ln => {
+      lines.forEach((ln, idx) => {
         let lineContent = this.cm.doc.getLine(ln)
         const lineLength = lineContent.length
         if (_.startsWith(lineContent, content)) {
           lineContent = lineContent.substring(content.length)
         }
+        if (appendToAllButLast && _.endsWith(lineContent, appendToAllButLast)) {
+          lineContent = lineContent.substring(0, lineContent.length - appendToAllButLast.length)
+        }
 
-        this.cm.doc.replaceRange(content + lineContent, { line: ln, ch: 0 }, { line: ln, ch: lineLength })
+        const suffix = (appendToAllButLast && idx < lines.length - 1) ? appendToAllButLast : ''
+        this.cm.doc.replaceRange(content + lineContent + suffix, { line: ln, ch: 0 }, { line: ln, ch: lineLength })
       })
       if (after) {
         const lastLine = _.last(lines)
