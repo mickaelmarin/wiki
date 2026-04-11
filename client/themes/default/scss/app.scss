@@ -392,6 +392,10 @@
         margin: 0;
       }
 
+      > p.alert-title {
+        padding-top: 0!important;
+      }
+
       @at-root .theme--dark & {
         background-color: transparent;
         color: inherit;
