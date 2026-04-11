@@ -52,6 +52,10 @@
               v-list-item-action
                 v-icon mdi-console
               v-list-item-title Shell Output
+            v-list-item(@click='insertCollapsible(`collapsible`)')
+              v-list-item-action
+                v-icon mdi-arrow-collapse-vertical
+              v-list-item-title Collapse content
         v-menu(offset-y, open-on-hover)
           template(v-slot:activator='{ on }')
             v-btn.animated.fadeIn.wait-p7s(icon, tile, v-on='on').mx-0
@@ -617,6 +621,22 @@ export default {
       const selection = this.cm.doc.getSelection()
       const content = selection || 'Your content here'
       const snippet = `<div class="container-${name}">\n<pre>${content}</pre>\n</div>`
+      if (selection) {
+        this.cm.doc.replaceSelection(snippet)
+      } else {
+        const cursor = this.cm.doc.getCursor('head')
+        this.cm.doc.replaceRange(snippet, cursor)
+        this.cm.doc.setSelection(
+          { line: cursor.line + 1, ch: '<pre>'.length },
+          { line: cursor.line + 1, ch: '<pre>'.length + content.length }
+        )
+      }
+      this.cm.focus()
+    },
+    insertCollapsible (name) {
+      const selection = this.cm.doc.getSelection()
+      const content = selection || 'Your content here'
+      const snippet = `<details>\n<summary>Full view 👇</summary>\n\n${content}\n\n</details>`
       if (selection) {
         this.cm.doc.replaceSelection(snippet)
       } else {
