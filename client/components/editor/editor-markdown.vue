@@ -46,51 +46,152 @@
         v-menu(offset-y, open-on-hover)
           template(v-slot:activator='{ on }')
             v-btn.animated.fadeIn.wait-p6s(icon, tile, v-on='on').mx-0
+              v-icon mdi-card-text-outline
+          v-list.py-0
+            v-list-item(@click='insertContainer(`shellout`)')
+              v-list-item-action
+                v-icon mdi-console
+              v-list-item-title Shell Output
+        v-menu(offset-y, open-on-hover)
+          template(v-slot:activator='{ on }')
+            v-btn.animated.fadeIn.wait-p7s(icon, tile, v-on='on').mx-0
               v-icon mdi-alpha-t-box-outline
           v-list.py-0
+            v-list-item(@click='insertGitlabAlert(`note`)')
+              v-list-item-action
+                v-icon(color='blue') mdi-information-outline
+              v-list-item-title Note
+            v-divider
+            v-list-item(@click='insertGitlabAlert(`tip`)')
+              v-list-item-action
+                v-icon(color='success') mdi-lightbulb-outline
+              v-list-item-title Tip
+            v-divider
+            v-list-item(@click='insertGitlabAlert(`important`)')
+              v-list-item-action
+                v-icon(color='purple') mdi-alert-decagram-outline
+              v-list-item-title Important
+            v-divider
+            v-list-item(@click='insertGitlabAlert(`caution`)')
+              v-list-item-action
+                v-icon(color='error') mdi-alert-circle-outline
+              v-list-item-title Caution
+            v-divider
+            v-list-item(@click='insertGitlabAlert(`warning`)')
+              v-list-item-action
+                v-icon(color='warning') mdi-alert-outline
+              v-list-item-title Warning
+            v-divider
             v-list-item(@click='insertBeforeEachLine({ content: `> `})')
               v-list-item-action
                 v-icon mdi-alpha-t-box-outline
               v-list-item-title {{$t('editor:markup.blockquote')}}
             v-divider
-            v-list-item(@click='insertBeforeEachLine({ content: `> `, after: `{.is-info}`})')
-              v-list-item-action
-                v-icon(color='blue') mdi-alpha-i-box-outline
-              v-list-item-title {{$t('editor:markup.blockquoteInfo')}}
-            v-divider
-            v-list-item(@click='insertBeforeEachLine({ content: `> `, after: `{.is-success}`})')
-              v-list-item-action
-                v-icon(color='success') mdi-alpha-s-box-outline
-              v-list-item-title {{$t('editor:markup.blockquoteSuccess')}}
-            v-divider
-            v-list-item(@click='insertBeforeEachLine({ content: `> `, after: `{.is-warning}`})')
-              v-list-item-action
-                v-icon(color='warning') mdi-alpha-w-box-outline
-              v-list-item-title {{$t('editor:markup.blockquoteWarning')}}
-            v-divider
-            v-list-item(@click='insertBeforeEachLine({ content: `> `, after: `{.is-danger}`})')
-              v-list-item-action
-                v-icon(color='error') mdi-alpha-e-box-outline
-              v-list-item-title {{$t('editor:markup.blockquoteError')}}
-            v-divider
         v-tooltip(bottom, color='primary')
           template(v-slot:activator='{ on }')
-            v-btn.animated.fadeIn.wait-p7s(icon, tile, v-on='on', @click='insertBeforeEachLine({ content: `- `})').mx-0
+            v-btn.animated.fadeIn.wait-p8s(icon, tile, v-on='on', @click='insertBeforeEachLine({ content: `- `})').mx-0
               v-icon mdi-format-list-bulleted
           span {{$t('editor:markup.unorderedList')}}
         v-tooltip(bottom, color='primary')
           template(v-slot:activator='{ on }')
-            v-btn.animated.fadeIn.wait-p8s(icon, tile, v-on='on', @click='insertBeforeEachLine({ content: `1. `})').mx-0
+            v-btn.animated.fadeIn.wait-p9s(icon, tile, v-on='on', @click='insertBeforeEachLine({ content: `1. `})').mx-0
               v-icon mdi-format-list-numbered
           span {{$t('editor:markup.orderedList')}}
-        v-tooltip(bottom, color='primary')
+        v-menu(offset-y, open-on-hover)
           template(v-slot:activator='{ on }')
-            v-btn.animated.fadeIn.wait-p9s(icon, tile, v-on='on', @click='toggleMarkup({ start: "`" })').mx-0
+            v-btn.animated.fadeIn.wait-p10s(icon, tile, v-on='on').mx-0
               v-icon mdi-code-tags
-          span {{$t('editor:markup.inlineCode')}}
+          v-list.py-0
+            v-list-item(@click='toggleMarkup({ start: "`" })')
+              v-list-item-action
+                v-icon mdi-code-tags
+              v-list-item-title {{$t('editor:markup.inlineCode')}}
+            v-divider
+            v-list-item(@click='insertCodeBlock(`bash`)')
+              v-list-item-action
+                v-icon mdi-console
+              v-list-item-title Bash
+            v-divider
+            v-list-item(@click='insertCodeBlock(`bat`)')
+              v-list-item-action
+                v-icon mdi-microsoft-windows
+              v-list-item-title Batch
+            v-divider
+            v-list-item(@click='insertCodeBlock(`c`)')
+              v-list-item-action
+                v-icon mdi-alpha-c-circle-outline
+              v-list-item-title C
+            v-divider
+            v-list-item(@click='insertCodeBlock(`css`)')
+              v-list-item-action
+                v-icon mdi-language-css3
+              v-list-item-title CSS
+            v-divider
+            v-list-item(@click='insertCodeBlock(`go`)')
+              v-list-item-action
+                v-icon mdi-language-go
+              v-list-item-title Go
+            v-divider
+            v-list-item(@click='insertCodeBlock(`html`)')
+              v-list-item-action
+                v-icon mdi-language-html5
+              v-list-item-title HTML
+            v-divider
+            v-list-item(@click='insertCodeBlock(`ini`)')
+              v-list-item-action
+                v-icon mdi-cog
+              v-list-item-title INI
+            v-divider
+            v-list-item(@click='insertCodeBlock(`js`)')
+              v-list-item-action
+                v-icon mdi-language-javascript
+              v-list-item-title JavaScript
+            v-divider
+            v-list-item(@click='insertCodeBlock(`python`)')
+              v-list-item-action
+                v-icon mdi-language-python
+              v-list-item-title Python
+            v-divider
+            v-list-item(@click='insertCodeBlock(`rb`)')
+              v-list-item-action
+                v-icon mdi-language-ruby
+              v-list-item-title Ruby
+            v-divider
+            v-list-item(@click='insertCodeBlock(`sql`)')
+              v-list-item-action
+                v-icon mdi-database
+              v-list-item-title SQL
+            v-divider
+            v-list-item(@click='insertCodeBlock(`xml`)')
+              v-list-item-action
+                v-icon mdi-xml
+              v-list-item-title XML
+            v-divider
+            v-list-item(@click='insertCodeBlock(`yaml`)')
+              v-list-item-action
+                v-icon mdi-file-code-outline
+              v-list-item-title YAML
+            v-divider
+        v-menu(offset-y, open-on-hover, :close-on-content-click='false')
+          template(v-slot:activator='{ on }')
+            v-btn.animated.fadeIn.wait-p10s(icon, tile, v-on='on').mx-0
+              v-icon mdi-table
+          v-card.pa-2
+            .caption.text-center.mb-1.grey--text {{ tablePickerHover.cols > 0 ? `${tablePickerHover.cols} × ${tablePickerHover.rows}` : 'Table' }}
+            table(style='border-collapse: separate; border-spacing: 3px;')
+              tr(v-for='r in 6', :key='r')
+                td(
+                  v-for='c in 6',
+                  :key='c',
+                  style='width:18px; height:18px; cursor:pointer; border:1px solid;',
+                  :style='{ background: c <= tablePickerHover.cols && r <= tablePickerHover.rows ? "#1976d2" : "#e0e0e0", borderColor: c <= tablePickerHover.cols && r <= tablePickerHover.rows ? "#1565c0" : "#bdbdbd" }',
+                  @mouseover='tablePickerHover = { cols: c, rows: r }',
+                  @mouseleave='tablePickerHover = { cols: 0, rows: 0 }',
+                  @click='insertTable(tablePickerHover.cols, tablePickerHover.rows)'
+                )
         v-tooltip(bottom, color='primary')
           template(v-slot:activator='{ on }')
-            v-btn.animated.fadeIn.wait-p10s(icon, tile, v-on='on', @click='toggleMarkup({ start: `<kbd>`, end: `</kbd>` })').mx-0
+            v-btn.animated.fadeIn.wait-p11s(icon, tile, v-on='on', @click='toggleMarkup({ start: `<kbd>`, end: `</kbd>` })').mx-0
               v-icon mdi-keyboard-variant
           span {{$t('editor:markup.keyboardKey')}}
         v-tooltip(bottom, color='primary')
@@ -98,6 +199,11 @@
             v-btn.animated.fadeIn.wait-p11s(icon, tile, v-on='on', @click='insertAfter({ content: `---`, newLine: true })').mx-0
               v-icon mdi-minus
           span {{$t('editor:markup.horizontalBar')}}
+        v-tooltip(bottom, color='primary')
+          template(v-slot:activator='{ on }')
+            v-btn.animated.fadeIn.wait-p11s(icon, tile, v-on='on', @click='insertAfter({ content: `<br>`, newLine: false })').mx-0
+              v-icon mdi-format-pilcrow
+          span Line Break &lt;br&gt;
         template(v-if='$vuetify.breakpoint.mdAndUp')
           v-spacer
           v-tooltip(bottom, color='primary', v-if='previewShown')
@@ -277,6 +383,69 @@ const md = new MarkdownIt({
   .use(mdFootnote)
   .use(mdImsize)
 
+// GitLab Alerts (mirror server/modules/rendering/html-gitlab-alerts/renderer.js
+// so the preview matches the saved page rendering)
+const gitlabAlertPattern = /^\[!(note|tip|important|caution|warning)\]$/i
+const gitlabAlertCssMap = { note: 'is-info', tip: 'is-success', important: 'is-important', caution: 'is-danger', warning: 'is-warning' }
+const gitlabAlertTitleMap = { note: 'Note', tip: 'Tip', important: 'Important', caution: 'Caution', warning: 'Warning' }
+
+md.core.ruler.push('gitlab_alerts', (state) => {
+  const tokens = state.tokens
+  for (let i = 0; i < tokens.length; i++) {
+    if (tokens[i].type !== 'blockquote_open') continue
+
+    // Find first inline token inside this blockquote
+    let inlineIdx = -1
+    for (let j = i + 1; j < tokens.length; j++) {
+      if (tokens[j].type === 'blockquote_close') break
+      if (tokens[j].type === 'inline') { inlineIdx = j; break }
+    }
+    if (inlineIdx < 0) continue
+
+    // The marker must be the very first text child (before any softbreak)
+    const children = tokens[inlineIdx].children || []
+    if (!children.length || children[0].type !== 'text') continue
+
+    const match = children[0].content.trim().match(gitlabAlertPattern)
+    if (!match) continue
+
+    const type = match[1].toLowerCase()
+    tokens[i].attrSet('class', `${gitlabAlertCssMap[type]} github-alert`)
+
+    // Check if content follows on the same paragraph (separated by softbreak)
+    const hasSoftbreak = children.length > 1 &&
+      (children[1].type === 'softbreak' || children[1].type === 'hardbreak')
+    const remainingChildren = hasSoftbreak ? children.slice(2) : children.slice(1)
+
+    if (remainingChildren.length > 0) {
+      // Content is in the same paragraph — split into title + content paragraphs
+      tokens[inlineIdx].children = remainingChildren
+      tokens[inlineIdx].content = tokens[inlineIdx].content.replace(/^\[!(?:note|tip|important|caution|warning)\]\n?/i, '')
+
+      const titlePOpen = new state.Token('paragraph_open', 'p', 1)
+      titlePOpen.attrSet('class', 'alert-title')
+      const titleInline = new state.Token('inline', '', 0)
+      const titleText = new state.Token('text', '', 0)
+      titleText.content = gitlabAlertTitleMap[type]
+      titleInline.children = [titleText]
+      titleInline.content = gitlabAlertTitleMap[type]
+      const titlePClose = new state.Token('paragraph_close', 'p', -1)
+
+      // Insert title paragraph before the current paragraph_open
+      tokens.splice(inlineIdx - 1, 0, titlePOpen, titleInline, titlePClose)
+    } else {
+      // Marker is alone in its paragraph — reuse it as the title
+      if (inlineIdx > 0 && tokens[inlineIdx - 1].type === 'paragraph_open') {
+        tokens[inlineIdx - 1].attrSet('class', 'alert-title')
+      }
+      const titleText = new state.Token('text', '', 0)
+      titleText.content = gitlabAlertTitleMap[type]
+      tokens[inlineIdx].children = [titleText]
+      tokens[inlineIdx].content = gitlabAlertTitleMap[type]
+    }
+  }
+})
+
 // DOMPurify fix for draw.io
 DOMPurify.addHook('uponSanitizeElement', (elm) => {
   if (elm.querySelectorAll) {
@@ -387,7 +556,8 @@ export default {
       previewHTML: '',
       helpShown: false,
       spellModeActive: false,
-      insertLinkDialog: false
+      insertLinkDialog: false,
+      tablePickerHover: { cols: 0, rows: 0 }
     }
   },
   computed: {
@@ -421,6 +591,60 @@ export default {
     }
   },
   methods: {
+    insertTable (cols = 3, rows = 2) {
+      const header = '| ' + Array.from({ length: cols }, (_, i) => `Header ${i + 1}`).join(' | ') + ' |'
+      const separator = '| ' + Array.from({ length: cols }, () => '--------').join(' | ') + ' |'
+      const row = '| ' + Array.from({ length: cols }, () => 'Cell').join(' | ') + ' |'
+      const snippet = [header, separator, ...Array.from({ length: rows }, () => row)].join('\n')
+      const cursor = this.cm.doc.getCursor('head')
+      this.cm.doc.replaceRange(snippet, cursor)
+      this.cm.doc.setCursor({ line: cursor.line, ch: 2 })
+      this.cm.focus()
+    },
+    insertCodeBlock (lang) {
+      const selection = this.cm.doc.getSelection()
+      const snippet = `\`\`\`${lang}\n${selection || ''}\n\`\`\``
+      if (selection) {
+        this.cm.doc.replaceSelection(snippet)
+      } else {
+        const cursor = this.cm.doc.getCursor('head')
+        this.cm.doc.replaceRange(snippet, cursor)
+        this.cm.doc.setCursor({ line: cursor.line + 1, ch: 0 })
+      }
+      this.cm.focus()
+    },
+    insertContainer (name) {
+      const selection = this.cm.doc.getSelection()
+      const content = selection || 'Your content here'
+      const snippet = `<div class="container-${name}">\n<pre>${content}</pre>\n</div>`
+      if (selection) {
+        this.cm.doc.replaceSelection(snippet)
+      } else {
+        const cursor = this.cm.doc.getCursor('head')
+        this.cm.doc.replaceRange(snippet, cursor)
+        this.cm.doc.setSelection(
+          { line: cursor.line + 1, ch: '<pre>'.length },
+          { line: cursor.line + 1, ch: '<pre>'.length + content.length }
+        )
+      }
+      this.cm.focus()
+    },
+    insertGitlabAlert (type) {
+      const selection = this.cm.doc.getSelection()
+      const content = selection || 'Your content here'
+      const snippet = `> [!${type}]\n> ${content}`
+      if (selection) {
+        this.cm.doc.replaceSelection(snippet)
+      } else {
+        const cursor = this.cm.doc.getCursor('head')
+        this.cm.doc.replaceRange(snippet, cursor)
+        this.cm.doc.setSelection(
+          { line: cursor.line + 1, ch: 2 },
+          { line: cursor.line + 1, ch: 2 + content.length }
+        )
+      }
+      this.cm.focus()
+    },
     toggleModal(key) {
       this.activeModal = (this.activeModal === key) ? '' : key
       this.helpShown = false
